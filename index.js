@@ -9,7 +9,7 @@ dotenv.config({ path: "./config/config.env" });
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const CONNECTION_URL = process.env.MONGO_URI;
+const CONNECTION_URL = process.env.MONGO_URL;
 
 // DB Connection
 mongoose
