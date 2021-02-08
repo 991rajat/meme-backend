@@ -2,8 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const colors = require("colors");
 const dotenv = require("dotenv");
-
-//  Env File
+const morgan = require("morgan");
+const memeRoute = require("./routes/memes");
+//  env File
 dotenv.config({ path: "./config/config.env" });
 
 const app = express();
@@ -11,7 +12,18 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const CONNECTION_URL = process.env.MONGO_URL;
 
-// DB Connection
+// dev logging middleware
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+// middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// routes
+app.use("/", memeRoute);
+// db Connection
 mongoose
   .connect(CONNECTION_URL, {
     useCreateIndex: true,
