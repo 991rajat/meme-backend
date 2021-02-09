@@ -1,78 +1,67 @@
 const Meme = require("../models/meme");
+const ErrorResponse = require("../utils/ErrorResponse");
+
+const responseMapper = (post) => {
+  return {
+    id: post._id,
+    name: post.name,
+    caption: post.caption,
+    url: post.url,
+  };
+};
 
 // @method POST
 // @desc Post a meme
-exports.postMeme = async (req, res) => {
+exports.createMeme = async (req, res, next) => {
   try {
     const newMemePost = new Meme(req.body);
     await newMemePost.save();
-    res.status(201).json({
-      success: true,
-      data: newMemePost,
-    });
+    res.status(201).json(responseMapper(newMemePost));
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      data: null,
-    });
+    next(err);
   }
 };
 
 // @method GET
 // @desc   Get all memes (100 only)
-exports.getMemes = async (req, res) => {
+exports.getMemes = async (req, res, next) => {
   try {
-    const allMemes = await Meme.find().sort({ _id: -1 }).limit(100);
-    res.status(200).json({
-      success: true,
-      data: allMemes,
+    let allMemes = await Meme.find().sort({ _id: -1 }).limit(100);
+    allMemes.forEach((eachmeme) => {
+      eachmeme = responseMapper(eachmeme);
     });
+    res.status(200).json(allMemes);
   } catch (err) {
-    res.status(400).json({
-      success: false,
-      data: null,
-    });
+    next(err);
   }
 };
 
 // @method GET
 // @desc   Get a single meme
-exports.getMeme = async (req, res) => {
+exports.getMeme = async (req, res, next) => {
   try {
     const singleMeme = await Meme.findById(req.params.id);
     if (!singleMeme) {
-      return res.status(404).json({
-        success: false,
-      });
+      return next(
+        new ErrorResponse(`Meme not found with id ${req.params.id}`, 404)
+      );
     }
-    res.status(200).json({
-      success: true,
-      data: singleMeme,
-    });
+    res.status(200).json(responseMapper(singleMeme));
   } catch (err) {
-    res.status(404).json({
-      success: false,
-      data: null,
-    });
+    next(err);
   }
 };
 
 // @method PATCH
 // @desc   Update a meme
-exports.patchMeme = async (req, res) => {
+exports.updateMeme = async (req, res, next) => {
   try {
     const updateMeme = await Meme.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    res.status(200).json({
-      success: true,
-      data: updateMeme,
-    });
+    res.status(200).json(responseMapper(updateMeme));
   } catch (err) {
-    res.status(404).json({
-      success: false,
-      data: null,
-    });
+    next(err);
   }
 };

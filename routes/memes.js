@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const {
-  postMeme,
+  createMeme,
   getMemes,
   getMeme,
-  patchMeme,
+  updateMeme,
 } = require("../controller/memes");
 
 //  @desc Post a Meme
 //  @route POST /memes
-router.post("/memes", postMeme);
+router.post("/memes", createMeme);
 
 //  @desc Get all Memes
 //  @route GET /memes
@@ -21,6 +21,6 @@ router.get("/memes/:id", getMeme);
 
 //  @desc Upadate a Meme
 //  @route PATCH /memes
-router.patch("/memes/:id", patchMeme);
+router.patch("/memes/:id", updateMeme);
 
 module.exports = router;
