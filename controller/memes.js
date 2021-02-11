@@ -27,10 +27,10 @@ exports.createMeme = async (req, res, next) => {
 exports.getMemes = async (req, res, next) => {
   try {
     let allMemes = await Meme.find().sort({ _id: -1 }).limit(100);
-    allMemes.forEach((eachmeme) => {
-      eachmeme = responseMapper(eachmeme);
+    let newallMemes = allMemes.map((eachmeme) => {
+      return responseMapper(eachmeme);
     });
-    res.status(200).json(allMemes);
+    res.status(200).json(newallMemes);
   } catch (err) {
     next(err);
   }
