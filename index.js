@@ -10,6 +10,9 @@ const errorHandler = require("./middleware/error");
 const swaggerUi = require("swagger-ui-express"),
   swaggerDocument = require("./swagger.json");
 
+const PORT = 8081,
+  NODE_ENV = "development",
+  MONGO_URL = "mongodb://127.0.0.1:27017/memesdb";
 //  env File
 dotenv.config({ path: "./config/config.env" });
 

@@ -5,7 +5,7 @@
     "title": "Meme API Backend",
     "description": "A simple meme streaming and posting application built on NodeJS and react"
   },
-  "host": "https://safe-oasis-68429.herokuapp.com/",
+  "host": "localhost:8081",
   "basePath": "/",
   "tags": [
     {
