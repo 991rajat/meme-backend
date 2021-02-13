@@ -15,8 +15,11 @@ dotenv.config({ path: "./config/config.env" });
 
 // Intializing express
 const app = express();
+// For Running on 8080
+//const swaggerPort = 8080;
+//const swaggerApp = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8081;
 const CONNECTION_URL = process.env.MONGO_URL;
 
 // dev logging middleware
@@ -45,17 +48,32 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// swagger ui
+// For Running on 8080
+// swaggerApp.use(cors());
+// swaggerApp.use(express.json());
+// swaggerApp.use(express.urlencoded({ extended: true }));
+//swagger route
 app.use("/swagger-ui", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 // routes
 app.use("/", memeRoute);
 
 // error handler
 app.use(errorHandler);
 app.use("*", (req, res) => {
-  res.status(404).json({ error: "endpoint not found" });
+  res.status(404).json({ message: "Endpoint not found", statusCode: 404 });
 });
+
+// For Running on 8080
+// swaggerApp.use(
+//   "/swagger-ui",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument)
+// );
+
+// swaggerApp.listen(swaggerPort, () => {
+//   console.log(`Swagger running on PORT: ${swaggerPort}`.yellow.bold);
+// });
+
 app.listen(PORT, () => {
   console.log(`Server running on PORT: ${PORT}.`.yellow.bold);
 });

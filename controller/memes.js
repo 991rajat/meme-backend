@@ -14,9 +14,12 @@ const responseMapper = (post) => {
 // @desc Post a meme
 exports.createMeme = async (req, res, next) => {
   try {
-    const newMemePost = new Meme(req.body);
+    const newMemePost = new Meme({
+      ...req.body,
+      slug: req.body.name + req.body.caption + req.body.url,
+    });
     await newMemePost.save();
-    res.status(201).json(responseMapper(newMemePost));
+    res.status(201).json({ id: responseMapper(newMemePost).id });
   } catch (err) {
     next(err);
   }
@@ -56,10 +59,20 @@ exports.getMeme = async (req, res, next) => {
 // @desc   Update a meme
 exports.updateMeme = async (req, res, next) => {
   try {
+    if (req.body.hasOwnProperty("name")) {
+      return next(new ErrorResponse(`Name is not allowed to change`, 405));
+    }
+
     const updateMeme = await Meme.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
+
+    if (!updateMeme) {
+      return next(
+        new ErrorResponse(`Meme not found with id ${req.params.id}`, 404)
+      );
+    }
     res.status(200).json(responseMapper(updateMeme));
   } catch (err) {
     next(err);

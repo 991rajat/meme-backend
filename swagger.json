@@ -3,14 +3,14 @@
   "info": {
     "version": "1.0.0",
     "title": "Meme API Backend",
-    "description": "A simple meme creator and streamer application built on NodeJS."
+    "description": "A simple meme streaming and posting application built on NodeJS and react"
   },
-  "host": "localhost:8000",
+  "host": "localhost:8081",
   "basePath": "/",
   "tags": [
     {
       "name": "Memes",
-      "description": "API for different GET, POST request for memes in the system"
+      "description": "API for different GET, POST, PATCH request for memes in the system"
     }
   ],
   "consumes": ["application/json"],
@@ -19,35 +19,144 @@
     "/memes": {
       "post": {
         "tags": ["Memes"],
+        "summary": "Save a new meme.",
         "description": "Create a meme post.",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
         "parameters": [
           {
-            "name": "meme",
+            "name": "body",
             "in": "body",
+            "description": "task object",
+            "required": true,
             "schema": {
-              "$ref": "#/definitions/MemeModel"
+              "$ref": "#/definitions/MemeBody"
             }
           }
         ],
-        "produces": ["application/json"],
         "responses": {
           "200": {
             "description": "Response",
             "schema": {
-              "$ref": "#/definitions/MemeResponse"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
+            }
+          },
+          "409": {
+            "description": "Duplicate Post Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "statusCode": "409",
+                "message": "Duplicate Post Request"
+              }
             }
           }
         }
       },
       "get": {
         "tags": ["Memes"],
+        "summary": "Get all memes",
         "description": "Get list of memes upto 100.",
         "produces": ["application/json"],
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "Response",
+            "description": "Success",
             "schema": {
-              "$ref": "#/definitions/MemeResponse"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Meme"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
+            }
+          }
+        }
+      }
+    },
+    "/memes/{id}": {
+      "get": {
+        "tags": ["Memes"],
+        "summary": "Get meme by id.",
+        "description": "Get meme by id",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "task id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Meme"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Memes"],
+        "summary": "Update meme by id.",
+        "description": "Update meme by id",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "task id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "task object",
+            "required": true,
+            "schema": {
+              "type": "object",
+
+              "$ref": "#/definitions/MemeBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Meme"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
             }
           }
         }
@@ -55,7 +164,8 @@
     }
   },
   "definitions": {
-    "MemeModel": {
+    "MemeBody": {
+      "type": "object",
       "required": ["name", "caption", "url"],
       "properties": {
         "name": {
@@ -69,10 +179,11 @@
         }
       }
     },
-    "MemeResponse": {
-      "required": ["name", "_id", "caption", "url"],
+    "Meme": {
+      "type": "object",
+      "required": ["name", "id", "caption", "url"],
       "properties": {
-        "_id": {
+        "id": {
           "type": "number"
         },
         "name": {
@@ -86,8 +197,16 @@
         }
       }
     },
-    "MemeGET": {
-      "type": "array"
+    "InvalidResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
     }
   }
 }
